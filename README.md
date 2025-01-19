@@ -1,5 +1,7 @@
 # Systemd Service Monitor
 
+[![Build and Release](https://github.com/igor-couto/systemd-service-watcher/actions/workflows/release.yml/badge.svg)](https://github.com/igor-couto/systemd-service-watcher/actions/workflows/release.yml)
+
 A quick and dirty C program that monitors specified systemd services by reading from an INI file and alerts when services are inactive.
 
 **Systemd Service Monitor** is useful for managing servers where the services being monitored are not directly under your control. For example, it can monitor third-party service applications or personal projects that rely on external dependencies, allowing you to receive personalized alerts when these services encounter issues.
