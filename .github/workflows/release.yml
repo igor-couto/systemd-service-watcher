@@ -6,53 +6,59 @@ on:
       - 'service_monitor.c'
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - arch: x86_64
-            target: x86_64-linux-gnu
             binary_name: service_monitor_x86_64
+            gcc_package: gcc
+            gpp_package: g++
+            build_command: gcc -o service_monitor_x86_64 service_monitor.c
           - arch: i686
-            target: i686-linux-gnu
             binary_name: service_monitor_i686
+            gcc_package: gcc-multilib
+            gpp_package: g++-multilib
+            build_command: gcc -m32 -o service_monitor_i686 service_monitor.c
           - arch: armv7
-            target: armv7-linux-gnueabihf
             binary_name: service_monitor_armv7
+            gcc_package: gcc-arm-linux-gnueabihf
+            gpp_package: g++-arm-linux-gnueabihf
+            build_command: arm-linux-gnueabihf-gcc -o service_monitor_armv7 service_monitor.c
           - arch: aarch64
-            target: aarch64-linux-gnu
             binary_name: service_monitor_aarch64
+            gcc_package: gcc-aarch64-linux-gnu
+            gpp_package: g++-aarch64-linux-gnu
+            build_command: aarch64-linux-gnu-gcc -o service_monitor_aarch64 service_monitor.c
     steps:
-      
+
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set Up Cross-Compiler
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-${{ matrix.target }} g++-${{ matrix.target }}
+          sudo apt-get install -y ${{ matrix.gcc_package }} ${{ matrix.gpp_package }}
 
       - name: Build Service Monitor
-        run: |
-          gcc-${{ matrix.target }} -o ${{ matrix.binary_name }} service_monitor.c
+        run: ${{ matrix.build_command }}
 
       - name: Upload Binary Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.binary_name }}
           path: ./${{ matrix.binary_name }}
 
   create-release:
-    needs: build-and-release
+    needs: build
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Binary Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: ./binaries
 
