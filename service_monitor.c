@@ -114,7 +114,6 @@ void monitor_services(const ServiceInfo *services, int service_count, unsigned i
 
             pclose(cmd_fp);
         }
-
         sleep(interval);
     }
 }
