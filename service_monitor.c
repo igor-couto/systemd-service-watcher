@@ -111,6 +111,7 @@ void monitor_services(const ServiceInfo *services, int service_count, unsigned i
                     printf("WARNING: '%s' is NOT running (status: '%s')\n", services[i].human_readable_name, result);
                 }
             }
+            
             pclose(cmd_fp);
         }
         sleep(interval);

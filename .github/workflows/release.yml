@@ -81,22 +81,11 @@ jobs:
         run: |
           git push origin ${{ steps.create_tag.outputs.tag }}
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
+      - name: Create Release with Assets
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ steps.create_tag.outputs.tag }}
-          release_name: Release ${{ steps.create_tag.outputs.tag }}
-          body: |
-            Automated release for Service Monitor.
-            Built on ${{ github.ref }} by GitHub Actions.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.create_tag.outputs.tag }}
-          files: ./binaries/*
+          tag: ${{ steps.create_tag.outputs.tag }}
+          name: Release ${{ steps.create_tag.outputs.tag }}
+          artifacts: ./binaries/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
