@@ -39,8 +39,7 @@ int load_services(const char *filename, ServiceInfo *services, int max_services)
             continue;
         }
 
-        // Split into two parts: human-readable name = systemd service name
-        *equals_pos = '\0'; // Replace '=' with null terminator
+        *equals_pos = '\0'; // Replace '=' with null terminator to split in two parts
 
         char *human_readable_name = line;
         char *service_name = equals_pos + 1;
