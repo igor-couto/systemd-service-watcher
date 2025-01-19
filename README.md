@@ -1,6 +1,15 @@
 # Systemd Service Monitor
 
-A C program that monitors specified systemd services by reading from an INI file and alerts when services are inactive. When any of the monitored services become inactive, the tool promptly alerts the user via the terminal.
+A quick and dirty C program that monitors specified systemd services by reading from an INI file and alerts when services are inactive.
+
+**Systemd Service Monitor** is useful for managing servers where the services being monitored are not directly under your control. For example, it can monitor third-party service applications or personal projects that rely on external dependencies, allowing you to receive personalized alerts when these services encounter issues.
+
+While **Systemd Service Monitor** currently logs alerts to the console, future updates may include:
+
+- **File Logging**: Save alerts and service statuses to log files for persistent tracking and historical analysis.
+- **Email Notifications**: Send automated email alerts when services become inactive, ensuring prompt awareness even when not monitoring the terminal.
+- **Streaming Alerts**: Integrate with streaming platforms or dashboards for real-time monitoring and visualization.
+- **Custom Actions**: Execute predefined scripts or commands in response to service status changes, enabling automated remediation steps.
 
 ## Usage
 
