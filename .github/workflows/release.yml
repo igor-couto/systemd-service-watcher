@@ -1,0 +1,93 @@
+name: Build and Release Service Monitor
+
+on:
+  push:
+    paths:
+      - 'service_monitor.c'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            target: x86_64-linux-gnu
+            binary_name: service_monitor_x86_64
+          - arch: i686
+            target: i686-linux-gnu
+            binary_name: service_monitor_i686
+          - arch: armv7
+            target: armv7-linux-gnueabihf
+            binary_name: service_monitor_armv7
+          - arch: aarch64
+            target: aarch64-linux-gnu
+            binary_name: service_monitor_aarch64
+    steps:
+      
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Cross-Compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-${{ matrix.target }} g++-${{ matrix.target }}
+
+      - name: Build Service Monitor
+        run: |
+          gcc-${{ matrix.target }} -o ${{ matrix.binary_name }} service_monitor.c
+
+      - name: Upload Binary Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.binary_name }}
+          path: ./${{ matrix.binary_name }}
+
+  create-release:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Download Binary Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./binaries
+
+      - name: Set Up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Git Tag
+        id: create_tag
+        run: |
+          TAG_NAME=v$(date +'%Y%m%d%H%M%S')
+          git tag $TAG_NAME
+          echo "::set-output name=tag::$TAG_NAME"
+
+      - name: Push Tag
+        run: |
+          git push origin ${{ steps.create_tag.outputs.tag }}
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.create_tag.outputs.tag }}
+          release_name: Release ${{ steps.create_tag.outputs.tag }}
+          body: |
+            Automated release for Service Monitor.
+            Built on ${{ github.ref }} by GitHub Actions.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.create_tag.outputs.tag }}
+          assets: ./binaries/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
