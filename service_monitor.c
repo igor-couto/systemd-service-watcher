@@ -34,7 +34,6 @@ int load_services(const char *filename, ServiceInfo *services, int max_services)
 
         char *equals_pos = strchr(line, '=');
         if (!equals_pos) {
-            // No '=' found, skip this line or handle error
             fprintf(stderr, "Warning: Invalid line (no '='): %s\n", line);
             continue;
         }
